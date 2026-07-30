@@ -12,6 +12,10 @@
 //   4. on any doubt it falls back to the scripted line. No error screen ever
 //      reaches the player. The degraded mode IS the game.
 //
+// Switching it on is not only a code change: index.html ships a policy that
+// forbids the page from opening any connection at all, so connect-src would
+// have to be relaxed deliberately and visibly.
+//
 // The reasoning behind leaving it switched off is in docs/design-notes.md.
 
 export class Narrator {

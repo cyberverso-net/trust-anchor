@@ -28,7 +28,7 @@ export class Terminal {
     this.hud.privacy.textContent = state.privacy;
     this.hud.trust.textContent = state.trust;
     this.hud.disclosures.textContent = state.disclosures;
-    this.hud.privacy.style.color = state.privacy < 60 ? 'var(--red)' : 'var(--amber)';
+    this.hud.privacy.classList.toggle('low', state.privacy < 60);
   }
 
   onSubmit(handler) {

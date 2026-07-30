@@ -29,6 +29,8 @@ jobs:
           node-version: '20'
       - name: Run the acceptance tests
         run: node test/playthrough.mjs
+      - name: Check the game is self-contained
+        run: node test/assets.mjs
 
   deploy:
     name: Deploy to Pages

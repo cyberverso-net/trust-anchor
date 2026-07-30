@@ -37,6 +37,8 @@ Some things are only there if you go looking. Try `XYZZY`. Try `42`. Try opening
 
 No account, no cookies, no analytics, no data collected of any kind. For a game about data minimisation that seemed like the absolute minimum.
 
+Nothing is fetched from anybody else either: no web fonts, no CDN, no remote images. Every asset is in this repository, the page ships a Content Security Policy that forbids it from opening any connection at all, and `test/assets.mjs` fails the build if that ever stops being true.
+
 ## Running it locally
 
     python3 -m http.server 8000
@@ -47,8 +49,9 @@ A server is needed because the game uses ES modules. Opening `index.html` straig
 ## Tests
 
     node test/playthrough.mjs
+    node test/assets.mjs
 
-Twenty-three assertions covering the three routes through Act One and the invariants that must never break, such as the wallet refusing to disclose anything in the alley before the request has been inspected. They run in CI on every push, and the site is only deployed if they pass.
+68 assertions covering the three routes through Act One, the disclosure ratchet, the rejection of ambiguous commands, and the invariants that must never break, such as the wallet refusing to disclose anything in the alley before the request has been inspected. A further 67 check that the game remains self-contained and that the page cannot phone anybody. Both files run in CI on every push, and the site is only deployed if they pass.
 
 ## How it is built
 
@@ -60,7 +63,8 @@ No framework, no build step, no dependencies, no network calls, and **no languag
     src/data/act1.js    the world and all of the text. No logic.
     src/ui.js           presentation only
     src/narrator.js     a hook for a model, switched off, with a mandatory fallback
-    test/               acceptance tests
+    test/playthrough.mjs  acceptance tests
+    test/assets.mjs       privacy and self-containment guard
     docs/design-notes.md  the two rules that matter, and why there is no model
     docs/sources.md       the legal acts behind every factual claim in the game
 

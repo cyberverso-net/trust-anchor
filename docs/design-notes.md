@@ -46,6 +46,12 @@ These three are not stylistic. They are the reason the game is allowed to claim 
 
 **Registration and conformance are different properties.** `registered` is a fact about the party. `conforming` is a fact about each individual attribute measured against the purpose that party declared. A registered relying party asking for seven attributes it has no use for produces seven warnings on the dashboard, and no warning about the register. Conflating the two would flatten the exact distinction Act One exists to draw.
 
+## Self-contained by construction
+
+The game fetches nothing from anybody. No web fonts, no CDN, no analytics, no remote images: the typeface is the system monospace stack and every other asset is in this repository. The document ships a Content Security Policy with `default-src 'none'` and no `connect-src`, so the page is not permitted to open a connection even if some future code tried.
+
+This is not decoration. A game about data minimisation that quietly told a third party every time somebody played it would be making a fool of itself. `test/assets.mjs` enforces the rule so that it survives contributors who never read this paragraph.
+
 ## The data file contract
 
 Every field an act data file may set, and the engine reads all of them. **A field the engine does not read does not exist**: content authors must not be able to set a state-relevant property that is silently ignored.

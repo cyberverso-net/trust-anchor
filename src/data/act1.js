@@ -9,6 +9,7 @@ export const ACT1 = {
 
   boot: `CONNECTING TO BRUXELLIA MUNICIPAL NODE ...
 CONNECT 14400/ARQ/V34/LAPM/V42BIS
+HOST: cyber/verso ◑
 WELCOME. YOU ARE CALLER NUMBER 1.`,
 
   title: `  ████ TRUST ANCHOR ████
