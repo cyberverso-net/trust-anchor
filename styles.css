@@ -1,6 +1,6 @@
 :root{
-  --bg:#0b0d0a; --amber:#f0b429; --dim:#8a7a3c;
-  --green:#7ec96b; --red:#e0685a; --cyan:#63c7c0; --grey:#6f7a6b;
+  --bg:#0b0d0a; --amber:#f0b429; --dim:#b09c52;
+  --green:#7ec96b; --red:#e0685a; --cyan:#63c7c0; --grey:#98a294;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
@@ -23,6 +23,14 @@ body{
   content:""; position:absolute; inset:0; pointer-events:none;
   background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);
 }
+@media (prefers-reduced-motion: reduce){ #shell:after{ display:none } }
+@media (prefers-contrast: more){ #shell:after{ display:none } .sys{ color:#c7d0c3 } }
+
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+input:focus-visible{ outline:2px solid var(--green); outline-offset:2px }
 header{
   padding:10px 16px; border-bottom:1px solid #2a3226;
   display:flex; justify-content:space-between; align-items:center;

@@ -36,11 +36,29 @@ It has not been added. It has been **instrumented**. The engine counts every unr
 
 The threshold is simple. If players hit *that is not a command* more than once or twice in a twenty-minute session, the problem is real and the classifier earns its place. If it happens rarely, the game does not need a model and the discussion is closed. Half of those inputs will be fixed by adding a synonym to the classic parser, which costs nothing and adds no dependency.
 
-## Adding content
+## Disclosure rules the engine enforces
 
-An act is a data file plus prose. To add one, follow the shape of `src/data/act1.js`: rooms with exits, characters with lines, presentation requests with a `minimal` answer and outcomes for the minimal case, the everything case, the wrong case and the refusal.
+These three are not stylistic. They are the reason the game is allowed to claim it teaches anything, and each has acceptance tests.
 
-Scoring falls out of the request definition. The distance between what the player presents and the `minimal` answer *is* the privacy cost. That is deliberate: the mechanic and the lesson are the same object.
+**Disclosure is a ratchet.** Anything handed over cannot be handed back, so no later good behaviour restores the best ending. A player who discloses beyond the declared purpose and then plays perfectly finishes as *compliant, exhausted*, never as *trust anchor*.
+
+**An ambiguous command discloses nothing, and never resolves upwards.** `PRESENT AGE_OVER_18 AND PID`, `PRESENT EVERYTHING EXCEPT MY ADDRESS` and `PRESENT GIVEN_NAME AND FAMILY_NAME` are all refused, with nothing disclosed and an explanation of what to type instead. A parser that guesses in the direction of more disclosure would teach the opposite of the thing the game is about. Rejection is deliberate: a confirmation prompt would train the player to click through, which is also the opposite.
+
+**Registration and conformance are different properties.** `registered` is a fact about the party. `conforming` is a fact about each individual attribute measured against the purpose that party declared. A registered relying party asking for seven attributes it has no use for produces seven warnings on the dashboard, and no warning about the register. Conflating the two would flatten the exact distinction Act One exists to draw.
+
+## The data file contract
+
+Every field an act data file may set, and the engine reads all of them. **A field the engine does not read does not exist**: content authors must not be able to set a state-relevant property that is silently ignored.
+
+**Room**: `title`, `ambient`, `exits`, `npcs`, `objects`, `request`, `firstVisit`, `onEnter`.
+
+**Character**: `match` (a regular expression on the player's phrasing), `lines` (spoken in order, the last one repeating), `opensRequest`.
+
+**Presentation request**: `requester`, `registered`, `intendedUse` (prose, shown in `inspect`), `inspect`, `minimal` (the attributes that conform to the declared purpose), `requireInspect` and `requireInspectText`, and the four outcomes `onMinimal`, `onAll`, `onWrong`, `onRefuse`.
+
+**Outcome**: `text`, and optionally `privacy`, `trust`, `ends`.
+
+Scoring falls out of the request definition. The distance between what the player presents and the `minimal` set *is* the privacy cost, and the conformance flag on the dashboard is the same comparison seen from the other side. That is deliberate: the mechanic and the lesson are the same object.
 
 ## Writing rules, if you are contributing prose
 

@@ -6,19 +6,22 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Least privilege: the default for the workflow is read-only, and only the
+# deploy job is granted what Pages needs.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Per-ref, so a pull request can never cancel a deployment of main.
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: trust-anchor-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   test:
     name: Acceptance tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,6 +35,10 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,16 +12,19 @@
 <div id="shell">
   <header>
     <b>TRUST ANCHOR</b>
-    <div id="hud">
+    <p class="sr-only">A text adventure. Output appears below as you type commands. Type HELP for the list of commands, and SCORE or DASHBOARD to hear your current state.</p>
+    <div id="hud" aria-hidden="true">
       <span>PRIVACY <i id="hp">100</i></span>
       <span>TRUST <i id="ht">0</i></span>
       <span>DISCLOSURES <i id="hd">0</i></span>
     </div>
   </header>
-  <div id="out"></div>
+  <div id="out" role="log" aria-live="polite" aria-relevant="additions" aria-label="Game output"></div>
   <form autocomplete="off">
-    <span id="prompt">&gt;</span>
-    <input id="in" autofocus spellcheck="false" placeholder="type a command, or HELP">
+    <label for="in" class="sr-only">Type a command. Type HELP for a list of commands.</label>
+    <span id="prompt" aria-hidden="true">&gt;</span>
+    <input id="in" autofocus spellcheck="false" autocapitalize="off" autocorrect="off"
+           placeholder="type a command, or HELP">
   </form>
 </div>
 <script type="module" src="src/main.js"></script>
