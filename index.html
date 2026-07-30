@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRUST ANCHOR , a text adventure</title>
+<meta name="description" content="A text adventure in the European digital identity ecosystem. Personal, satirical, not legal advice.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="shell">
+  <header>
+    <b>TRUST ANCHOR</b>
+    <div id="hud">
+      <span>PRIVACY <i id="hp">100</i></span>
+      <span>TRUST <i id="ht">0</i></span>
+      <span>DISCLOSURES <i id="hd">0</i></span>
+    </div>
+  </header>
+  <div id="out"></div>
+  <form autocomplete="off">
+    <span id="prompt">&gt;</span>
+    <input id="in" autofocus spellcheck="false" placeholder="type a command, or HELP">
+  </form>
+</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
