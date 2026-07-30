@@ -19,6 +19,7 @@ export class Engine {
       openRequests: new Set(),
       regulation: 0,
       unparsed: [],
+      ambiguous: [],
       ended: false,
       ending: null
     };
@@ -30,7 +31,8 @@ export class Engine {
     return {
       privacy: this.s.privacy, trust: this.s.trust,
       disclosures: this.s.log.length, room: this.s.room, ended: this.s.ended,
-      unparsed: this.s.unparsed.length
+      unparsed: this.s.unparsed.length,
+      ambiguous: this.s.ambiguous.length
     };
   }
 
@@ -169,40 +171,98 @@ export class Engine {
       return this.emit(req.requireInspectText, 'warn');
     }
 
-    const all = /\bpid\b|everything|\ball\b/.test(cmd);
-    if (all) {
+    const parsed = this.parsePresentation(cmd);
+
+    // An ambiguous command discloses nothing. It never resolves upwards.
+    if (parsed.ambiguous) {
+      this.s.ambiguous.push(cmd);
+      return this.emit(parsed.message, 'warn');
+    }
+
+    if (parsed.all) {
       for (const key of Object.keys(this.d.attributes)) this.disclose(key, req);
       return this.resolve(req, req.onAll);
     }
 
-    const key = this.matchAttribute(cmd);
-    if (!key) {
+    if (!parsed.key) {
       this.s.unparsed.push(cmd);
       return this.emit(
         'Present what? Try PRESENT AGE_OVER_18, or WALLET to see what you are carrying.',
         'sys'
       );
     }
-    this.disclose(key, req);
-    const minimal = (req.minimal || []).includes(key);
-    return this.resolve(req, minimal ? req.onMinimal : req.onWrong);
+
+    this.disclose(parsed.key, req);
+    const conforming = (req.minimal || []).includes(parsed.key);
+    return this.resolve(req, conforming ? req.onMinimal : req.onWrong);
   }
 
-  matchAttribute(cmd) {
-    const keys = Object.keys(this.d.attributes);
-    for (const k of keys) {
-      if (cmd.includes(k) || cmd.includes(k.replace(/_/g, ' '))) return k;
+  // Returns exactly one of: {all}, {key}, {ambiguous, message}, {}.
+  // The rule this encodes: a parsing ambiguity must never be resolved in the
+  // direction of disclosing more. When in doubt the wallet asks, and discloses
+  // nothing while it waits.
+  parsePresentation(cmd) {
+    const body = cmd.replace(/^(present|show|give|disclose)\s*/, '').trim();
+    const keys = Object.keys(this.d.attributes)
+      .filter(k => body.includes(k) || body.includes(k.replace(/_/g, ' ')));
+    const wantsAll = /(^|[^a-z])(pid|everything|all)([^a-z]|$)/.test(body);
+    const negated = /(^|[^a-z])(not|except|without|but|minus|apart from|other than)([^a-z]|$)/.test(body);
+
+    if (negated) {
+      return { ambiguous: true, message:
+`Your wallet does not move.
+
+  "I do not do 'everything except'. That is precisely how everything ends up
+   being handed over. Name the one attribute you want to present, and I will
+   present that one and nothing else."
+
+Nothing was disclosed.` };
     }
-    if (/\bage\b/.test(cmd)) return 'age_over_18';
-    if (/\bname\b/.test(cmd)) return 'given_name';
-    return null;
+
+    if (wantsAll && keys.length) {
+      return { ambiguous: true, message:
+`Your wallet does not move.
+
+  "You have asked me for one attribute and for all of them in the same breath.
+   I am not going to guess. I am certainly not going to guess upwards."
+
+Say PRESENT AGE_OVER_18, or say PRESENT PID and mean it. Nothing was disclosed.` };
+    }
+
+    if (keys.length > 1) {
+      return { ambiguous: true, message:
+`Your wallet does not move.
+
+  "One at a time. That is the entire discipline."
+
+You named: ` + keys.join(', ') + `. Pick one. Nothing was disclosed.` };
+    }
+
+    if (wantsAll) return { all: true };
+    if (keys.length === 1) return { key: keys[0] };
+
+    if (/(^|[^a-z])name([^a-z]|$)/.test(body)) {
+      return { ambiguous: true, message:
+`Your wallet does not move.
+
+  "Which name? You are carrying two, and they are not interchangeable."
+
+Say PRESENT GIVEN_NAME or PRESENT FAMILY_NAME. Nothing was disclosed.` };
+    }
+    if (/(^|[^a-z])age([^a-z]|$)/.test(body)) return { key: 'age_over_18' };
+
+    return {};
   }
 
+  // Two independent properties, and the game exists to keep them apart.
+  // registered  , is this party in the register at all
+  // conforming  , is THIS attribute within the purpose that party declared
   disclose(key, req) {
     this.s.log.push({
       what: this.d.attributes[key].label,
       to: req.requester,
-      lawful: !!req.registered
+      registered: !!req.registered,
+      conforming: !!req.registered && (req.minimal || []).includes(key)
     });
   }
 
@@ -229,11 +289,10 @@ export class Engine {
       return this.emit('  You have disclosed nothing to anybody. The purest state of grace.', 'good');
     }
     this.s.log.forEach((e, i) => {
-      this.emit(
-        '  ' + String(i + 1).padStart(2, '0') + '  ' + e.what.padEnd(22) + ' -> ' + e.to +
-        (e.lawful ? '' : '   [!] recipient not in the register'),
-        e.lawful ? null : 'warn'
-      );
+      let flag = '', cls = null;
+      if (!e.registered) { flag = '   [!] recipient not in the register'; cls = 'warn'; }
+      else if (!e.conforming) { flag = '   [!] outside the purpose they declared'; cls = 'warn'; }
+      this.emit('  ' + String(i + 1).padStart(2, '0') + '  ' + e.what.padEnd(22) + ' -> ' + e.to + flag, cls);
     });
     this.emit(this.d.dashboardNote, 'sys');
   }
@@ -252,9 +311,14 @@ export class Engine {
     this.emit(this.d.regulation[i], 'sys');
   }
 
+  // Disclosure is a ratchet. Anything already handed over cannot be handed back,
+  // so no later good behaviour can restore the best ending.
   finish(declared) {
-    const unlawful = this.s.log.filter(e => !e.lawful).length;
-    const id = unlawful > 0 ? 'spreadsheet_row' : declared;
+    const unlawful = this.s.log.filter(e => !e.registered).length;
+    const nonConforming = this.s.log.filter(e => e.registered && !e.conforming).length;
+    const id = unlawful > 0 ? 'spreadsheet_row'
+             : nonConforming > 0 ? 'compliant_exhausted'
+             : declared;
     this.s.ended = true;
     this.s.ending = id;
     const ending = this.d.endings[id];

@@ -24,14 +24,14 @@ and none should be blamed.`,
   scoring: { privacy: 100, trust: 0 },
 
   attributes: {
-    age_over_18:        { label: 'age_over_18',         value: 'true',              derived: true },
+    age_over_18:        { label: 'age_over_18',         value: 'true' },
     given_name:         { label: 'given_name',          value: 'ALEX' },
     family_name:        { label: 'family_name',         value: 'MERTENS' },
     birth_date:         { label: 'birth_date',          value: '1991-03-22' },
     birth_place:        { label: 'birth_place',         value: 'GHENT' },
     resident_address:   { label: 'resident_address',    value: '12 RUE DU CANARD BOITEUX' },
     nationality:        { label: 'nationality',         value: 'BE' },
-    personal_identifier:{ label: 'personal_identifier', value: 'XX/YY/0000-FICTIONAL', unique: true }
+    personal_identifier:{ label: 'personal_identifier', value: 'XX/YY/0000-FICTIONAL' }
   },
 
   wallet: `WALLET UNIT , certified, and quietly judgmental
@@ -47,11 +47,6 @@ and none should be blamed.`,
          nationality ........ BE
          personal_identifier  XX/YY/0000-FICTIONAL
          age_over_18 ........ true      <- derived, discloses nothing else
-
-  [PID x 99 MORE]  Ninety-nine further identical copies of the above, issued in
-         a batch, to be used exactly once each and then destroyed, so that the
-         man at this door and the man at that door cannot sit down over a beer
-         and work out that you are one person who went to two doors.
 
   [THE BACK OF THE WALLET]  Engraved, in large friendly letters: DON'T PANIC.
          Somebody fought for that in a working group. Three sessions. She won.
@@ -179,19 +174,14 @@ certified. On the back, engraved in large friendly letters:
 
     DON'T PANIC
 
-"Inside you will find your Person Identification Data. You will also find
- ninety-nine further identical copies of it."
+"Somebody fought for that in a working group," he says, following your eyes.
+"Three sessions. She won. It is the single most useful thing printed on any
+device you own."
 
-"Why ninety-nine?"
-
-"So that the man at this door and the man at that door cannot sit down over a
- beer and work out that you are one person who went to two doors."
-
-"And with a hundred?"
-
-"Then they have a very boring beer. Use each one once. Then destroy it. I will
- not be checking, because I have arranged not to be able to check, and that
- took considerably longer than the camera."
+"Inside you will find your Person Identification Data. What you do with it
+ from here is between you and whoever asks. I will not be watching, because I
+ have arranged not to be able to watch, and that took considerably longer than
+ the camera."
 
 The street is OUT.`,
         `THE PID PROVIDER
@@ -246,7 +236,6 @@ He is holding what appears to be a cash register with an antenna glued to it.`,
     tavern: {
       requester: 'AU BON ATTRIBUT SPRL',
       registered: true,
-      needsNpcFirst: 'barkeep',
       inspect: `PRESENTATION REQUEST , inspected
 
   Requester ......... "AU BON ATTRIBUT SPRL", tavern
@@ -410,9 +399,10 @@ between two evenings of your life.
 
 Your wallet, quietly:
 
-"Right. So. There is a reason these things come in batches of thirty and get
- burned after one use. And there is a reason a monk in a tower keeps saying he
- can prove it to you without handing you anything at all.
+"Right. So. There is a reason a very small app down the road hands out its
+ proofs thirty at a time and burns each one after a single use. And there is a
+ reason a monk in a tower keeps saying he can prove it to you without handing
+ you anything at all.
 
  You solved the puzzle. You did not yet solve the problem.
 

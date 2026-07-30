@@ -46,6 +46,8 @@ Same-device and cross-device flows, the latter typically involving a QR code.
 
 **Batched, one-time-use attestations** as the countermeasure. In the public age verification blueprint, batches of thirty proofs are recommended, each to be used once and then removed from the batch, with timestamp precision deliberately reduced to limit linkability.
 
+This mechanism belongs to the **dedicated age verification solution**, and Act One does not attribute it to the wallet. The wallet in Act One issues person identification data and nothing else; the batching is something the player is told about at the end of the act, as a property of somebody else's design, and meets in Act Two.
+
 **Transparency dashboard.** The user can see what was disclosed and to whom. CIR (EU) 2024/2979 on integrity and core functionalities.
 
 ## Trust, certification, revocation
