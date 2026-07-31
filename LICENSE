@@ -1,6 +1,9 @@
 TRUST ANCHOR , dual licence
 
-CODE (everything under src/ and test/, and the CI workflow)
+CODE
+  index.html, styles.css, favicon.svg, CNAME, .gitignore
+  everything under src/ and test/
+  everything under .github/
 MIT License
 
 Copyright (c) 2026 Paolo De Rosa
@@ -23,10 +26,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-GAME TEXT AND DOCUMENTATION (everything under docs/, the README, and the prose
-inside src/data/)
+GAME TEXT AND DOCUMENTATION
+  README.md
+  everything under docs/
+  the prose inside src/data/, meaning the strings, not the structure they sit in
 Creative Commons Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
+
+Every file in this repository falls under exactly one of the two headings
+above. If a file is ever added that does not, the classification is wrong and
+should be fixed rather than assumed.
 
 DISCLAIMER
 This is a personal, satirical project. It does not represent the position of

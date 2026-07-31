@@ -50,8 +50,9 @@ A server is needed because the game uses ES modules. Opening `index.html` straig
 
     node test/playthrough.mjs
     node test/assets.mjs
+    node test/contract.mjs
 
-68 assertions covering the three routes through Act One, the disclosure ratchet, the rejection of ambiguous commands, and the invariants that must never break, such as the wallet refusing to disclose anything in the alley before the request has been inspected. A further 67 check that the game remains self-contained and that the page cannot phone anybody. Both files run in CI on every push, and the site is only deployed if they pass.
+100 assertions covering the three routes through Act One, the disclosure ratchet, the rejection of ambiguous and unrecognised commands, and the invariants that must never break, such as the wallet refusing to disclose anything in the alley before the request has been inspected. A further 67 check that the game remains self-contained and cannot phone anybody, and 47 check that the data file and the engine agree on which fields exist. All three run in CI on every push, and the site is only deployed if they pass.
 
 ## How it is built
 
@@ -65,6 +66,7 @@ No framework, no build step, no dependencies, no network calls, and **no languag
     src/narrator.js     a hook for a model, switched off, with a mandatory fallback
     test/playthrough.mjs  acceptance tests
     test/assets.mjs       privacy and self-containment guard
+    test/contract.mjs     data file schema, and licence coverage
     docs/design-notes.md  the two rules that matter, and why there is no model
     docs/sources.md       the legal acts behind every factual claim in the game
 

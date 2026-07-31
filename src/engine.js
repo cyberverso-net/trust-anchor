@@ -20,6 +20,7 @@ export class Engine {
       regulation: 0,
       unparsed: [],
       ambiguous: [],
+      disclosedAll: false,
       ended: false,
       ending: null
     };
@@ -175,11 +176,12 @@ export class Engine {
 
     // An ambiguous command discloses nothing. It never resolves upwards.
     if (parsed.ambiguous) {
-      this.s.ambiguous.push(cmd);
+      this.s.ambiguous.push({ cmd, reason: parsed.reason });
       return this.emit(parsed.message, 'warn');
     }
 
     if (parsed.all) {
+      this.s.disclosedAll = true;
       for (const key of Object.keys(this.d.attributes)) this.disclose(key, req);
       return this.resolve(req, req.onAll);
     }
@@ -197,19 +199,58 @@ export class Engine {
     return this.resolve(req, conforming ? req.onMinimal : req.onWrong);
   }
 
-  // Returns exactly one of: {all}, {key}, {ambiguous, message}, {}.
-  // The rule this encodes: a parsing ambiguity must never be resolved in the
-  // direction of disclosing more. When in doubt the wallet asks, and discloses
-  // nothing while it waits.
+  // The payload of a PRESENT command is parsed as a small grammar, not searched
+  // for substrings. Every token must be something this game knows: an attribute,
+  // a full-disclosure word, a conjunction or a filler word. Anything else is
+  // refused with nothing disclosed.
+  //
+  // The safety property comes from the whitelist, not from the list of negations
+  // below. That list exists only so that a player who wrote "everything except
+  // my address" gets a useful sentence instead of a generic one. Adding a word
+  // to it improves the message; forgetting one cannot leak an attribute.
   parsePresentation(cmd) {
-    const body = cmd.replace(/^(present|show|give|disclose)\s*/, '').trim();
-    const keys = Object.keys(this.d.attributes)
-      .filter(k => body.includes(k) || body.includes(k.replace(/_/g, ' ')));
-    const wantsAll = /(^|[^a-z])(pid|everything|all)([^a-z]|$)/.test(body);
-    const negated = /(^|[^a-z])(not|except|without|but|minus|apart from|other than)([^a-z]|$)/.test(body);
+    const attributes = Object.keys(this.d.attributes);
+    const ALIAS = {
+      age: 'age_over_18',
+      'given name': 'given_name',
+      'family name': 'family_name',
+      'birth date': 'birth_date',
+      'birth place': 'birth_place',
+      'resident address': 'resident_address',
+      'personal identifier': 'personal_identifier'
+    };
+    const FILLER = ['my', 'the', 'a', 'only', 'just', 'please', 'him', 'her', 'them'];
+    const CONJUNCTION = ['and', '&', 'plus', 'with'];
+    const EVERYTHING = ['pid', 'everything', 'all'];
+    const NEGATION = ['not', 'no', 'never', 'none', 'except', 'without', 'but', 'minus',
+                      'apart', 'other', 'excluding', 'omit', 'skip', 'nothing'];
+
+    let body = cmd.replace(/^(present|show|give|disclose)\b/, '')
+                  .toLowerCase()
+                  .replace(/[,.;:!?"']/g, ' ')
+                  .replace(/\s+/g, ' ')
+                  .trim();
+    for (const [phrase, key] of Object.entries(ALIAS)) {
+      if (phrase.includes(' ')) body = body.replace(new RegExp('\\b' + phrase + '\\b', 'g'), key);
+    }
+    if (!body) return {};
+
+    const picked = [];
+    const unknown = [];
+    let wantsEverything = false, negated = false, ambiguousName = false;
+
+    for (let token of body.split(' ')) {
+      if (ALIAS[token]) token = ALIAS[token];
+      if (FILLER.includes(token) || CONJUNCTION.includes(token)) continue;
+      if (NEGATION.includes(token)) { negated = true; continue; }
+      if (EVERYTHING.includes(token)) { wantsEverything = true; continue; }
+      if (attributes.includes(token)) { if (!picked.includes(token)) picked.push(token); continue; }
+      if (token === 'name') { ambiguousName = true; continue; }
+      unknown.push(token);
+    }
 
     if (negated) {
-      return { ambiguous: true, message:
+      return { ambiguous: true, reason: 'negation', message:
 `Your wallet does not move.
 
   "I do not do 'everything except'. That is precisely how everything ends up
@@ -219,8 +260,27 @@ export class Engine {
 Nothing was disclosed.` };
     }
 
-    if (wantsAll && keys.length) {
-      return { ambiguous: true, message:
+    if (unknown.length) {
+      return { ambiguous: true, reason: 'unknown-token', message:
+`Your wallet does not move.
+
+  "I do not know what ` + unknown.map(u => '\'' + u + '\'').join(' or ') + ` is, and I am not going to
+   improvise with your identity."
+
+Say WALLET to see exactly what you are carrying. Nothing was disclosed.` };
+    }
+
+    if (ambiguousName && !picked.length) {
+      return { ambiguous: true, reason: 'which-name', message:
+`Your wallet does not move.
+
+  "Which name? You are carrying two, and they are not interchangeable."
+
+Say PRESENT GIVEN_NAME or PRESENT FAMILY_NAME. Nothing was disclosed.` };
+    }
+
+    if (wantsEverything && (picked.length || ambiguousName)) {
+      return { ambiguous: true, reason: 'mixed', message:
 `Your wallet does not move.
 
   "You have asked me for one attribute and for all of them in the same breath.
@@ -229,28 +289,17 @@ Nothing was disclosed.` };
 Say PRESENT AGE_OVER_18, or say PRESENT PID and mean it. Nothing was disclosed.` };
     }
 
-    if (keys.length > 1) {
-      return { ambiguous: true, message:
+    if (picked.length > 1) {
+      return { ambiguous: true, reason: 'multiple', message:
 `Your wallet does not move.
 
   "One at a time. That is the entire discipline."
 
-You named: ` + keys.join(', ') + `. Pick one. Nothing was disclosed.` };
+You named: ` + picked.join(', ') + `. Pick one. Nothing was disclosed.` };
     }
 
-    if (wantsAll) return { all: true };
-    if (keys.length === 1) return { key: keys[0] };
-
-    if (/(^|[^a-z])name([^a-z]|$)/.test(body)) {
-      return { ambiguous: true, message:
-`Your wallet does not move.
-
-  "Which name? You are carrying two, and they are not interchangeable."
-
-Say PRESENT GIVEN_NAME or PRESENT FAMILY_NAME. Nothing was disclosed.` };
-    }
-    if (/(^|[^a-z])age([^a-z]|$)/.test(body)) return { key: 'age_over_18' };
-
+    if (wantsEverything) return { all: true };
+    if (picked.length === 1) return { key: picked[0] };
     return {};
   }
 
@@ -317,7 +366,8 @@ Say PRESENT GIVEN_NAME or PRESENT FAMILY_NAME. Nothing was disclosed.` };
     const unlawful = this.s.log.filter(e => !e.registered).length;
     const nonConforming = this.s.log.filter(e => e.registered && !e.conforming).length;
     const id = unlawful > 0 ? 'spreadsheet_row'
-             : nonConforming > 0 ? 'compliant_exhausted'
+             : this.s.disclosedAll ? 'compliant_exhausted'
+             : nonConforming > 0 ? 'careless'
              : declared;
     this.s.ended = true;
     this.s.ending = id;

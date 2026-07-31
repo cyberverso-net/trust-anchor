@@ -155,7 +155,6 @@ The square is back to the SOUTH.`,
   npcs: {
     provider: {
       match: /provider|official|clerk/,
-      room: 'lobby',
       lines: [
         `THE PID PROVIDER
 
@@ -194,7 +193,6 @@ The street is OUT.`,
 
     barkeep: {
       match: /barkeep|bartender|barman|keeper/,
-      room: 'tavern',
       opensRequest: 'tavern',
       lines: [
         `BARKEEP
@@ -213,7 +211,6 @@ You could INSPECT REQUEST before doing anything rash.`,
 
     figure: {
       match: /figure|hood|stranger|man/,
-      room: 'alley',
       lines: [
         `HOODED FIGURE
 
@@ -348,7 +345,7 @@ Your wallet, no longer gentle:
       requireInspect: true,
       requireInspectText: `Your wallet physically resists. "INSPECT REQUEST first. Please. I am begging you."`,
       onAll: {
-        privacy: -55, unlawful: true,
+        privacy: -55,
         text: `The figure's device makes a sound like a fax machine having an idea.
 
 "Lovely. Lovely. All of it. Beautiful."
@@ -363,7 +360,7 @@ that.
 Your wallet has stopped humming. It does that when it is disappointed.`
       },
       onWrong: {
-        privacy: -12, unlawful: true,
+        privacy: -12,
         text: `He takes it. He would have taken anything. He is not fussy, which is the
 whole business model.`
       },
@@ -409,6 +406,15 @@ Your wallet, quietly:
 
  Shall we go again?"`
     },
+    careless: {
+      rating: `RATING: CARELESS.
+You got there in the end. On the way you handed over things that were nobody's
+business, to a man who only ever needed to know one of them, and he did not ask
+twice because he did not have to.
+
+Nothing terrible happened. That is the part worth sitting with: nothing
+terrible happens most of the time, and the record is permanent anyway.`
+    },
     compliant_exhausted: {
       rating: `RATING: COMPLIANT, EXHAUSTED.
 You got the beer. You also gave away most of yourself to get it, which is the
@@ -444,7 +450,7 @@ convened about this exact moment. You are in it. You have always been in it.`
     { match: /^(arf|architecture)/, text: `The Architecture and Reference Framework looks up from its own footnotes.\n\n  "I am at version 2.10.0."\n  "You said 2.9.0 a minute ago."\n  "That was before you looked at me."` },
     { match: /wsca|wscd|\bwua\b/, text: `A door with no handle recites its own lock at you:\n\n  "The WSCA cannot address the WSCD without a valid WUA. The WUA is issued\n   to the WU by the WP. Not that WP. The other WP."\n\n  "There are two WPs?"\n  "There is one WP and one WP."\n\nYour wallet translates all of it into fifteen words. The door opens. Each of\nthose letters, it turns out, is genuinely a different thing, and when the\nthing in question is where your private key lives, the difference matters.` },
     { match: /topic ?27/, text: `You are looking for Topic 27. Topic 27 is between Topic 9 and Topic 50.` },
-    { match: /zkp|zero.?knowledge|promised land/, text: `From the edge of the square, on a clear day, you can see it: a ridge, and\nbeyond the ridge a country nobody has quite reached yet.\n\n    ZERO KNOWLEDGE\n    POPULATION: NOBODY, BY DESIGN\n    (the population cannot be counted. Counting would be linkable.)\n\n    NO HANDOVER BEYOND THIS POINT\n    Milk and honey available subject to a future implementing act\n\nThat is Act Three. You are in Act One. Buy the beer first.` },
+    { match: /zkp|zero.?knowledge|promised land/, text: `From the edge of the square, on a clear day, you can see it: a ridge, and\nbeyond the ridge a country that has recently opened and that almost nobody has\nmoved to yet.\n\n    ZERO KNOWLEDGE\n    POPULATION: NOBODY, BY DESIGN\n    (the population cannot be counted. Counting would be linkable.)\n\n    NO HANDOVER BEYOND THIS POINT\n    Milk and honey available subject to a future implementing act\n\nThat is Act Three. You are in Act One. Buy the beer first.` },
     { match: /age (verification )?app|minimalist|mini.?wallet/, text: `A very small figure in a very plain robe is sitting on the fountain.\n\n  "I know one thing about you."\n  "Which thing?"\n  "That you are over eighteen."\n  "And my name?"\n  "I have arranged my entire existence so as to be incapable of learning it.\n   It was not easy. I am very proud."\n\n  "I am temporary," he adds, unprompted.\n  "You've been temporary for a while now."\n  "Temporary is a status, not a duration."` },
     { match: /^load$/, text: `R Tape loading error, 0:1` },
     { match: /^(no carrier)$/, text: `The word is older than you think and sadder than it looks. You will meet it\nproperly in Act Two.` }

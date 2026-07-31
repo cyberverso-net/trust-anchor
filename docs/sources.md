@@ -46,7 +46,7 @@ Same-device and cross-device flows, the latter typically involving a QR code.
 
 **Batched, one-time-use attestations** as the countermeasure. In the public age verification blueprint, batches of thirty proofs are recommended, each to be used once and then removed from the batch, with timestamp precision deliberately reduced to limit linkability.
 
-This mechanism belongs to the **dedicated age verification solution**, and Act One does not attribute it to the wallet. The wallet in Act One issues person identification data and nothing else; the batching is something the player is told about at the end of the act, as a property of somebody else's design, and meets in Act Two.
+This mechanism belongs to the **dedicated age verification solution**, and Act One does not attribute it to the wallet. In Act One the wallet unit holds the person identification data issued to it by the PID Provider, and nothing else; the batching is something the player is told about at the end of the act, as a property of somebody else's design, and meets in Act Two.
 
 **Transparency dashboard.** The user can see what was disclosed and to whom. CIR (EU) 2024/2979 on integrity and core functionalities.
 
@@ -64,7 +64,11 @@ This mechanism belongs to the **dedicated age verification solution**, and Act O
 
 A **dedicated age verification solution** exists, distinct from the wallet and intended as a bridge until wallets are widely available. Roles: attestation provider, app instance, relying party. Mobile document format, OpenID4VCI and OpenID4VP, same-device and cross-device flows, batches of thirty one-time proofs, and the proof provider is not informed of the services where you present the proof.
 
-**Zero-knowledge proofs are experimental.** In the published specifications they are a `SHOULD` rather than a `SHALL`, described as an upcoming feature. The game therefore treats them as a country you can see from a ridge and have not yet reached.
+**Zero-knowledge proofs are included, and optional.** The Commission states that zero-knowledge proof technology is included in the solution, as of the second version of the blueprint published in October 2025. In the technical specification the mechanism is specified in Annex A and required at `SHOULD` level, for both the app and the relying party, and the same document still describes it as an experimental feature. Consulted on the public specification repository, main branch, on 30 July 2026.
+
+So the accurate reading is **present but optional, and labelled experimental**, not "coming later". The game reflects this: the country beyond the ridge has opened and almost nobody has moved there yet, and in Act Three the one who walks in first is the small dedicated app rather than the general framework. That ordering is a fact about deployment, not a joke at anybody's expense.
+
+Sources: Commission factpage on the age verification blueprint, and the public technical specification at `eu-digital-identity-wallet/av-doc-technical-specification`.
 
 ## Certification, for a later act
 

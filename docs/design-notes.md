@@ -42,7 +42,9 @@ These three are not stylistic. They are the reason the game is allowed to claim 
 
 **Disclosure is a ratchet.** Anything handed over cannot be handed back, so no later good behaviour restores the best ending. A player who discloses beyond the declared purpose and then plays perfectly finishes as *compliant, exhausted*, never as *trust anchor*.
 
-**An ambiguous command discloses nothing, and never resolves upwards.** `PRESENT AGE_OVER_18 AND PID`, `PRESENT EVERYTHING EXCEPT MY ADDRESS` and `PRESENT GIVEN_NAME AND FAMILY_NAME` are all refused, with nothing disclosed and an explanation of what to type instead. A parser that guesses in the direction of more disclosure would teach the opposite of the thing the game is about. Rejection is deliberate: a confirmation prompt would train the player to click through, which is also the opposite.
+**An ambiguous command discloses nothing, and never resolves upwards.** The payload of `PRESENT` is parsed as a small grammar: every token has to be an attribute, a full-disclosure word, a conjunction or a filler word, and anything else is refused. The safety property comes from that whitelist, not from a list of forbidden words. `PRESENT NO PID`, `PRESENT NATIONALITYISH` and `PRESENT GIVEN NAMESPACE` are all refused because the tokens are not recognised, and would be refused even if nobody had thought of them in advance. The list of negations in the parser exists only to give a better sentence back; forgetting a word in it degrades the message, it cannot leak an attribute.
+
+Rejection is deliberate: a confirmation prompt would train the player to click through, which is the habit the game is trying to break.
 
 **Registration and conformance are different properties.** `registered` is a fact about the party. `conforming` is a fact about each individual attribute measured against the purpose that party declared. A registered relying party asking for seven attributes it has no use for produces seven warnings on the dashboard, and no warning about the register. Conflating the two would flatten the exact distinction Act One exists to draw.
 
@@ -60,7 +62,11 @@ Every field an act data file may set, and the engine reads all of them. **A fiel
 
 **Character**: `match` (a regular expression on the player's phrasing), `lines` (spoken in order, the last one repeating), `opensRequest`.
 
-**Presentation request**: `requester`, `registered`, `intendedUse` (prose, shown in `inspect`), `inspect`, `minimal` (the attributes that conform to the declared purpose), `requireInspect` and `requireInspectText`, and the four outcomes `onMinimal`, `onAll`, `onWrong`, `onRefuse`.
+**Presentation request**: `requester`, `registered`, `inspect` (the prose the player reads, which is where the declared purpose is stated), `minimal` (the attributes that conform to that purpose), `requireInspect` and `requireInspectText`, and the four outcomes `onMinimal`, `onAll`, `onWrong`, `onRefuse`.
+
+**Ending**: `rating`, and optionally `coda`.
+
+`test/contract.mjs` checks this list against the data file in both directions, with comments stripped from the engine first, so a field named only in a comment does not count as read.
 
 **Outcome**: `text`, and optionally `privacy`, `trust`, `ends`.
 

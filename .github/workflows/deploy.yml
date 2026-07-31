@@ -31,6 +31,8 @@ jobs:
         run: node test/playthrough.mjs
       - name: Check the game is self-contained
         run: node test/assets.mjs
+      - name: Check the data file contract
+        run: node test/contract.mjs
 
   deploy:
     name: Deploy to Pages

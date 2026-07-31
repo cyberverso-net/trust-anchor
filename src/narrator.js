@@ -18,10 +18,13 @@
 //
 // The reasoning behind leaving it switched off is in docs/design-notes.md.
 
+const TIMEOUT_MS = 4000;
+
 export class Narrator {
   constructor(opts = {}) {
     this.endpoint = opts.endpoint || null;
     this.budget = opts.budget ?? 0;
+    this.timeoutMs = opts.timeoutMs ?? TIMEOUT_MS;
     this.enabled = !!this.endpoint && this.budget > 0;
   }
 
@@ -30,10 +33,14 @@ export class Narrator {
     if (!this.enabled || this.budget <= 0) return event.text;
     try {
       this.budget--;
+      // A turn that never resolves would freeze the output queue, which in a
+      // text adventure is indistinguishable from the game being dead. Slow is
+      // treated exactly like broken: fall back and carry on.
       const res = await fetch(this.endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ scripted: event.text, cls: event.cls, state: event.state })
+        body: JSON.stringify({ scripted: event.text, cls: event.cls, state: event.state }),
+        signal: AbortSignal.timeout(this.timeoutMs)
       });
       if (!res.ok) return event.text;
       const data = await res.json();

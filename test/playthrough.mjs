@@ -2,7 +2,6 @@
 // Covers the three routes, the disclosure ratchet, ambiguous commands, and the
 // invariants that must never break.
 
-import { readFileSync } from 'node:fs';
 import { Engine } from '../src/engine.js';
 import { ACT1 } from '../src/data/act1.js';
 
@@ -42,7 +41,7 @@ console.log('\nRecovery after excessive disclosure is not possible');
 {
   const { e, text } = play([...TO_TAVERN, 'present given_name', 'talk to barkeep', 'present age_over_18']);
   check('the act ends', e.s.ended);
-  check('ending is compliant_exhausted, not trust_anchor', e.s.ending === 'compliant_exhausted', e.s.ending);
+  check('the best ending is unreachable', e.s.ending !== 'trust_anchor', e.s.ending);
   check('two disclosures', e.s.log.length === 2, e.s.log.length);
   check('given_name is registered but not conforming',
     e.s.log[0].registered === true && e.s.log[0].conforming === false);
@@ -51,10 +50,21 @@ console.log('\nRecovery after excessive disclosure is not possible');
   check('privacy has fallen', e.s.privacy < 100, e.s.privacy);
 }
 
+console.log('\nGiving a little too much is not the same as giving everything');
+{
+  const { e, text } = play([...TO_TAVERN, 'present given_name', 'talk to barkeep', 'present age_over_18']);
+  check('ending is careless', e.s.ending === 'careless', e.s.ending);
+  check('the rating does not claim you gave away most of yourself',
+    !text.includes('most of yourself'));
+  check('two disclosures', e.s.log.length === 2, e.s.log.length);
+}
+
 console.log('\nRegistered relying party asks for everything');
 {
   const { e, text } = play([...TO_TAVERN, 'present pid', 'dashboard']);
   check('ending is compliant_exhausted', e.s.ending === 'compliant_exhausted', e.s.ending);
+  check('the rating is the one about giving away most of yourself',
+    text.includes('most of yourself'));
   check('eight disclosures', e.s.log.length === 8, e.s.log.length);
   check('all recipients registered', e.s.log.every(x => x.registered === true));
   check('exactly one conforming attribute', e.s.log.filter(x => x.conforming).length === 1);
@@ -77,6 +87,36 @@ for (const cmd of [
   check(label + ' does not end the act', !e.s.ended, e.s.ending);
   check(label + ' is counted as ambiguous', e.s.ambiguous.length === 1, e.s.ambiguous.length);
   check(label + ' says so', text.includes('Nothing was disclosed'));
+}
+
+console.log('\nNegations and near-misses disclose nothing');
+for (const cmd of [
+  'present no pid',
+  'present never pid',
+  'present none of the pid',
+  'present no given_name',
+  'present nationalityish',
+  'present given namespace',
+  'present my whole life',
+  'present pid but not my address',
+  'present everything really'
+]) {
+  const label = JSON.stringify(cmd);
+  const { e, text } = play([...TO_TAVERN, cmd]);
+  check(label + ' discloses nothing', e.s.log.length === 0, e.s.log.length);
+  check(label + ' does not end the act', !e.s.ended, e.s.ending);
+  check(label + ' says nothing was disclosed', text.includes('Nothing was disclosed'));
+}
+
+console.log('\nAliases and spacing still work');
+{
+  const { e } = play([...TO_TAVERN, 'present age']);
+  check('PRESENT AGE is accepted as the derived attribute', e.s.ending === 'trust_anchor', e.s.ending);
+}
+{
+  const { e } = play([...TO_TAVERN, 'present given name']);
+  check('PRESENT GIVEN NAME discloses exactly one attribute', e.s.log.length === 1, e.s.log.length);
+  check('and it is given_name', e.s.log[0] && e.s.log[0].what === 'given_name');
 }
 
 console.log('\nThe exact full-disclosure command is still supported');
@@ -150,21 +190,6 @@ console.log('\nParser instrumentation');
   const { e } = play([...TO_TAVERN, 'present age_over_18 and pid']);
   check('ambiguity is counted separately from unrecognised input',
     e.s.ambiguous.length === 1 && e.s.unparsed.length === 0);
-}
-
-console.log('\nData file contract');
-{
-  const engineSource = readFileSync(new URL('../src/engine.js', import.meta.url), 'utf8');
-  const contract = ['minimal', 'registered', 'requireInspect', 'onMinimal', 'onAll', 'onWrong',
-                    'onRefuse', 'inspect', 'requester', 'exits', 'npcs', 'objects', 'request',
-                    'opensRequest', 'firstVisit', 'onEnter', 'match', 'lines', 'ends'];
-  const missing = contract.filter(f => !engineSource.includes(f));
-  check('every field named in the contract is read by the engine', missing.length === 0, missing.join(', '));
-
-  const dataSource = readFileSync(new URL('../src/data/act1.js', import.meta.url), 'utf8');
-  const dead = ['needsNpcFirst', 'walletWarning', 'unlocks:', 'derived:', 'unique:']
-    .filter(f => dataSource.includes(f));
-  check('the data file sets no field the engine ignores', dead.length === 0, dead.join(', '));
 }
 
 console.log('\n' + (failures === 0 ? 'ALL TESTS PASS' : failures + ' TESTS FAILED'));
