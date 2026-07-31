@@ -182,7 +182,7 @@ export class Engine {
 
     if (parsed.all) {
       this.s.disclosedAll = true;
-      for (const key of Object.keys(this.d.attributes)) this.disclose(key, req);
+      for (const key of this.d.attributes) this.disclose(key, req);
       return this.resolve(req, req.onAll);
     }
 
@@ -209,7 +209,7 @@ export class Engine {
   // my address" gets a useful sentence instead of a generic one. Adding a word
   // to it improves the message; forgetting one cannot leak an attribute.
   parsePresentation(cmd) {
-    const attributes = Object.keys(this.d.attributes);
+    const attributes = this.d.attributes;
     const ALIAS = {
       age: 'age_over_18',
       'given name': 'given_name',
@@ -308,7 +308,7 @@ You named: ` + picked.join(', ') + `. Pick one. Nothing was disclosed.` };
   // conforming  , is THIS attribute within the purpose that party declared
   disclose(key, req) {
     this.s.log.push({
-      what: this.d.attributes[key].label,
+      what: key,
       to: req.requester,
       registered: !!req.registered,
       conforming: !!req.registered && (req.minimal || []).includes(key)

@@ -62,7 +62,7 @@ Quello che il repository può garantire finisce lì. La richiesta iniziale la se
 | `src/narrator.js` | il gancio per un modello, spento, con fallback obbligatorio |
 | `test/playthrough.mjs` | test di accettazione sui percorsi e sugli invarianti |
 | `test/assets.mjs` | nessuna dipendenza esterna, nessuna connessione a runtime |
-| `test/contract.mjs` | schema del file dati e copertura della licenza |
+| `test/contract.mjs` | schema del file dati osservato a runtime, e copertura della licenza |
 | `docs/design-notes.md` | le regole che il motore fa rispettare, e perché non c'è un modello |
 | `docs/sources.md` | gli atti dietro ogni affermazione fattuale del gioco |
 
@@ -76,7 +76,7 @@ I test non hanno dipendenze, e girano in CI prima di ogni pubblicazione:
 
 ## Licenza
 
-Doppia, in un unico file [`LICENSE`](LICENSE). Il codice è MIT, il testo del gioco e la documentazione sono CC BY 4.0. Ogni file del repository ricade sotto una delle due voci, e c'è un test che se ne accerta.
+Doppia, in un unico file [`LICENSE`](LICENSE). Il codice è MIT, il testo del gioco e la documentazione sono CC BY 4.0. Ogni file è classificato, e uno è dichiaratamente misto: `src/data/act1.js` ha struttura di codice e stringhe di testo, e dividerlo per far tornare i conti avrebbe peggiorato il file. Un test cammina su tutto l'albero e se ne accerta.
 
 ## Disclaimer
 
@@ -153,7 +153,7 @@ The tests have no dependencies, and run in CI before every deployment:
 
 ## Licence
 
-Dual, in a single [`LICENSE`](LICENSE) file. Code is MIT, game text and documentation are CC BY 4.0. Every file in the repository falls under one of the two headings, and a test makes sure of it.
+Dual, in a single [`LICENSE`](LICENSE) file. Code is MIT, game text and documentation are CC BY 4.0. Every file is classified, and one is declared mixed: `src/data/act1.js` has the structure of code and the strings of game text, and splitting it to tidy the classification would have made the file worse. A test walks the whole tree and makes sure of it.
 
 ## Disclaimer
 

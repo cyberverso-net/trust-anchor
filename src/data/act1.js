@@ -5,7 +5,7 @@
 // must trace back to docs/sources.md.
 
 export const ACT1 = {
-  meta: { id: 'act1', title: 'THE TAVERN OF OVER-ASKING', start: 'lobby' },
+  meta: { start: 'lobby' },
 
   boot: `CONNECTING TO BRUXELLIA MUNICIPAL NODE ...
 CONNECT 14400/ARQ/V34/LAPM/V42BIS
@@ -24,16 +24,17 @@ and none should be blamed.`,
 
   scoring: { privacy: 100, trust: 0 },
 
-  attributes: {
-    age_over_18:        { label: 'age_over_18',         value: 'true' },
-    given_name:         { label: 'given_name',          value: 'ALEX' },
-    family_name:        { label: 'family_name',         value: 'MERTENS' },
-    birth_date:         { label: 'birth_date',          value: '1991-03-22' },
-    birth_place:        { label: 'birth_place',         value: 'GHENT' },
-    resident_address:   { label: 'resident_address',    value: '12 RUE DU CANARD BOITEUX' },
-    nationality:        { label: 'nationality',         value: 'BE' },
-    personal_administrative_number:{ label: 'personal_administrative_number', value: 'XX/YY/0000-FICTIONAL' }
-  },
+  // The order is the order in which a full disclosure is recorded.
+  attributes: [
+    'age_over_18',
+    'given_name',
+    'family_name',
+    'birth_date',
+    'birth_place',
+    'resident_address',
+    'nationality',
+    'personal_administrative_number'
+  ],
 
   wallet: `WALLET UNIT , certified, and quietly judgmental
 

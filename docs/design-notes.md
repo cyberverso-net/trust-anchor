@@ -68,13 +68,19 @@ Every field an act data file may set, and the engine reads all of them. **A fiel
 
 **Presentation request**: `requester`, `registered`, `inspect` (the prose the player reads, which is where the declared purpose is stated), `minimal` (the attributes that conform to that purpose), `requireInspect` and `requireInspectText`, and the four outcomes `onMinimal`, `onAll`, `onWrong`, `onRefuse`.
 
-**Ending**: `rating`, and optionally `coda`.
-
-`test/contract.mjs` checks this list against the data file in both directions, with comments stripped from the engine first, so a field named only in a comment does not count as read.
-
 **Outcome**: `text`, and optionally `privacy`, `trust`, `ends`.
 
-Scoring falls out of the request definition. The distance between what the player presents and the `minimal` set *is* the privacy cost, and the conformance flag on the dashboard is the same comparison seen from the other side. That is deliberate: the mechanic and the lesson are the same object.
+**Ending**: `rating`, and optionally `coda`.
+
+`attributes` is a plain list of identifiers, in the order a full disclosure is recorded. It used to be a map with a label and a value; neither was read by anything, and a structure that exists only to look thorough is exactly what this rule is against.
+
+### How the claim is checked
+
+`test/contract.mjs` wraps the data file in a recursive `Proxy` and plays the game through every route, including the ones that only exist to be got wrong. It traps `get` and `ownKeys`, because the engine reaches some structures by iterating them rather than by naming them, and a check that watched only `get` would report live fields as dead.
+
+The set of paths the engine genuinely touched is then compared with the declared schema in both directions: nothing declared may go unread, and nothing read may go undeclared. Two negative fixtures at the bottom of the file prove the check can fail, because a check that cannot fail is a decoration.
+
+The previous version of this test searched the engine source for each field name. It was a false assurance twice over: a name mentioned in a string satisfied the search, and a list of exemptions quietly excused fields nobody read.
 
 ## Writing rules, if you are contributing prose
 

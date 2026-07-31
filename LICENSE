@@ -33,9 +33,16 @@ GAME TEXT AND DOCUMENTATION
 Creative Commons Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
 
-Every file in this repository falls under exactly one of the two headings
-above. If a file is ever added that does not, the classification is wrong and
-should be fixed rather than assumed.
+MIXED FILE
+  src/data/act1.js is deliberately both. Its structure is code and falls under
+  the MIT terms; the strings inside it are the text of the game and fall under
+  CC BY 4.0. Splitting the file to make the classification tidier would make the
+  file worse, so it is declared here instead.
+
+Every file in this repository is classified by one of the headings above, and
+src/data/act1.js is the single declared exception that carries both. If a file
+is ever added that fits none of them, the classification is wrong and should be
+fixed rather than assumed. test/contract.mjs checks this over the whole tree.
 
 DISCLAIMER
 This is a personal, satirical project. It does not represent the position of
