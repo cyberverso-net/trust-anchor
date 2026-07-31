@@ -26,7 +26,15 @@ Official texts are on EUR-Lex: `https://eur-lex.europa.eu/legal-content/EN/TXT/?
 
 **PID**, person identification data. **EAA** and **QEAA**, electronic attestations of attributes, which may come from public sector authentic sources. CIR (EU) 2025/1569.
 
-**Derived attributes.** `age_over_18` answers the question without revealing the date of birth. This is the puzzle at the centre of Act One.
+**The attribute identifiers.** CIR (EU) 2024/2977, Annex, tables 1 and 2. Mandatory: `family_name`, `given_name`, `birth_date`, `birth_place`, `nationality`. Optional, among others: `resident_address` and `personal_administrative_number`. The wallet in Act One carries a mix of the two, and says which is which.
+
+There is no attribute called `personal_identifier`, and the game does not invent one. Where a provider needs a national attribute that the Annex does not define, the PID Rulebook requires it to live in a **domestic namespace**, formed by appending the ISO 3166-1 alpha-2 country code to the EU-wide namespace, at `SHALL` level.
+
+**`age_over_18` comes from the PID Rulebook, not from CIR (EU) 2024/2977.** The Rulebook defines it as an optional attribute alongside `age_over_NN`, `age_in_years` and `age_birth_year`. This matters, because it is the attribute the whole of Act One turns on, and because the Rulebook states the reason those attributes exist at all:
+
+> Having multiple data elements instead of a single one allows having different levels of granularity for requests and responses, and thus allows issuers and Relying Parties to practice data minimization.
+
+That sentence is the thesis of this game, written by the specification rather than by us. PID Rulebook v1.0.0, section 2.3.3.
 
 ## Formats and protocols
 
@@ -64,11 +72,19 @@ This mechanism belongs to the **dedicated age verification solution**, and Act O
 
 A **dedicated age verification solution** exists, distinct from the wallet and intended as a bridge until wallets are widely available. Roles: attestation provider, app instance, relying party. Mobile document format, OpenID4VCI and OpenID4VP, same-device and cross-device flows, batches of thirty one-time proofs, and the proof provider is not informed of the services where you present the proof.
 
-**Zero-knowledge proofs are included, and optional.** The Commission states that zero-knowledge proof technology is included in the solution, as of the second version of the blueprint published in October 2025. In the technical specification the mechanism is specified in Annex A and required at `SHOULD` level, for both the app and the relying party, and the same document still describes it as an experimental feature. Consulted on the public specification repository, main branch, on 30 July 2026.
+**Zero-knowledge proofs: present in the current specification as an experimental option, and described inconsistently by the official documentation.** This one deserves three separate statements rather than one, because the sources do not agree with each other.
 
-So the accurate reading is **present but optional, and labelled experimental**, not "coming later". The game reflects this: the country beyond the ridge has opened and almost nobody has moved there yet, and in Act Three the one who walks in first is the small dedicated app rather than the general framework. That ordering is a fact about deployment, not a joke at anybody's expense.
+*What the October 2025 announcement said.* The Commission's news item on the second version of the blueprint, 10 October 2025, described zero-knowledge proof technology as something work was ongoing to include in a future release.
 
-Sources: Commission factpage on the age verification blueprint, and the public technical specification at `eu-digital-identity-wallet/av-doc-technical-specification`.
+*What the current factpage says.* The Commission factpage on the blueprint now states that zero-knowledge proof technology is included in the solution.
+
+*What the specification itself says.* The technical specification requires the mechanism at `SHOULD` level, for the app and for the relying party, with the mechanism set out in Annex A. The same document also still contains a section describing the zero-knowledge proof solution as an experimental feature that a next version will include.
+
+So the honest reading is: **present, optional, labelled experimental, and documented inconsistently**. Not "coming later", which was true in October 2025 and is no longer the whole story, and not "shipped and settled", which the specification itself does not claim.
+
+The game reflects exactly that. The country beyond the ridge has opened and almost nobody has moved there, and in Act Three the one who walks in first is the small dedicated app rather than the general framework. That ordering is a fact about deployment, not a joke at anybody's expense.
+
+Consulted on the `main` branch of the public specification repository on 31 July 2026. `main` is a moving target: when the specification publishes a tagged release, this entry should cite the tag instead of the branch.
 
 ## Certification, for a later act
 
@@ -97,3 +113,12 @@ The certification material is verified against CIR (EU) 2024/2981 article by art
 | CID (EU) 2015/1505, CID (EU) 2025/2164 | 32015D1505, 32025D2164 | trusted lists and template |
 | CIR (EU) 2015/806 | 32015R0806 | EU trust mark |
 | CIR (EU) 2015/1502 | 32015R1502 | assurance levels |
+
+## Other sources
+
+| Source | Version | Used for |
+|---|---|---|
+| PID Rulebook | v1.0.0 | `age_over_18` and the other age attributes, domestic namespaces, and the data minimisation rationale quoted above |
+| EU age verification blueprint, technical specification | `main` branch, consulted 31 July 2026 | batches of thirty one-time proofs, and the status of zero-knowledge proofs |
+| Commission factpage and news items on the blueprint | as dated in the text | the two conflicting statements about zero-knowledge proofs |
+| GitHub Pages documentation on data collection | consulted 31 July 2026 | the limit of what this project can promise about privacy |

@@ -32,7 +32,7 @@ and none should be blamed.`,
     birth_place:        { label: 'birth_place',         value: 'GHENT' },
     resident_address:   { label: 'resident_address',    value: '12 RUE DU CANARD BOITEUX' },
     nationality:        { label: 'nationality',         value: 'BE' },
-    personal_identifier:{ label: 'personal_identifier', value: 'XX/YY/0000-FICTIONAL' }
+    personal_administrative_number:{ label: 'personal_administrative_number', value: 'XX/YY/0000-FICTIONAL' }
   },
 
   wallet: `WALLET UNIT , certified, and quietly judgmental
@@ -40,14 +40,16 @@ and none should be blamed.`,
   [PID]  Person Identification Data, issued this morning by the PID Provider
          after it verified you were you by asking you to prove you were you.
 
-         given_name ......... ALEX
-         family_name ........ MERTENS
-         birth_date ......... 1991-03-22
-         birth_place ........ GHENT
-         resident_address ... 12 RUE DU CANARD BOITEUX
-         nationality ........ BE
-         personal_identifier  XX/YY/0000-FICTIONAL
-         age_over_18 ........ true      <- derived, discloses nothing else
+         given_name ......... ALEX             mandatory
+         family_name ........ MERTENS          mandatory
+         birth_date ......... 1991-03-22       mandatory
+         birth_place ........ GHENT            mandatory
+         nationality ........ BE               mandatory
+         resident_address ... 12 RUE DU CANARD BOITEUX      optional
+         personal_administrative_number ...... optional
+                              XX/YY/0000-FICTIONAL
+         age_over_18 ........ true             optional, and the only one
+                                               the barkeep actually needs
 
   [THE BACK OF THE WALLET]  Engraved, in large friendly letters: DON'T PANIC.
          Somebody fought for that in a working group. Three sessions. She won.
@@ -67,9 +69,9 @@ and none should be blamed.`,
   READ THE REGULATION      do not
 
 Attributes: age_over_18, given_name, family_name, birth_date, birth_place,
-resident_address, nationality, personal_identifier
-  , or PRESENT PID to hand over the whole lot, which is a choice you can make
-    exactly once per playthrough and regret for the rest of it.`,
+resident_address, nationality, personal_administrative_number
+  , or PRESENT PID to hand over the whole lot, which is a choice the game will
+    let you make as often as you like and will remember every single time.`,
 
   rooms: {
     lobby: {
@@ -240,7 +242,7 @@ He is holding what appears to be a cash register with an antenna glued to it.`,
   Registered ........ yes, in the register of relying parties
   Intended use ...... "verification of legal drinking age"
   Requesting ........ given_name, family_name, birth_date, birth_place,
-                      resident_address, nationality, personal_identifier,
+                      resident_address, nationality, personal_administrative_number,
                       age_over_18
   Accepted formats .. as a document, or as a token. Either. Both. The tavern
                       does not care and has never once been asked to care,
