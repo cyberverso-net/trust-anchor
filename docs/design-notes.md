@@ -48,11 +48,15 @@ Rejection is deliberate: a confirmation prompt would train the player to click t
 
 **Registration and conformance are different properties.** `registered` is a fact about the party. `conforming` is a fact about each individual attribute measured against the purpose that party declared. A registered relying party asking for seven attributes it has no use for produces seven warnings on the dashboard, and no warning about the register. Conflating the two would flatten the exact distinction Act One exists to draw.
 
-## Self-contained by construction
+## Self-contained by construction, and the part that is not up to us
 
 The game fetches nothing from anybody. No web fonts, no CDN, no analytics, no remote images: the typeface is the system monospace stack and every other asset is in this repository. The document ships a Content Security Policy with `default-src 'none'` and no `connect-src`, so the page is not permitted to open a connection even if some future code tried.
 
 This is not decoration. A game about data minimisation that quietly told a third party every time somebody played it would be making a fool of itself. `test/assets.mjs` enforces the rule so that it survives contributors who never read this paragraph.
+
+**The guarantee is about the application, not about the network.** Serving a page means somebody answers an HTTP request, and whoever answers it sees where it came from. GitHub Pages [logs and stores the visitor's IP address for security purposes](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection), signed in or not, and no amount of policy in the document changes that. Anything the project says about privacy has to stop at the edge of what the repository controls, which is: no dependency, no telemetry, and no connection once the page has loaded.
+
+Stating the limit is not a caveat bolted on for safety. It is the same discipline the game teaches, applied to the game: claim exactly what you can show, and not one attribute more.
 
 ## The data file contract
 

@@ -1,9 +1,13 @@
-// Asset and privacy guard.
+// Self-containment guard.
 //
-// The game must remain a self-contained folder: nothing is fetched from anybody
-// else, so playing it cannot be observed by a third party. This test fails the
-// build if that ever stops being true, which is the only way a promise like
-// that survives contact with a future contributor.
+// What this file checks: the game has no external dependency and opens no
+// connection once it has loaded. That is the whole guarantee, and it is a
+// guarantee about the application.
+//
+// What it deliberately does not check, because it cannot: the hosting provider
+// serving the first request. GitHub Pages logs visitor IP addresses for
+// security purposes, and no policy inside the document changes that. Documents
+// in this repository must say so; see the check at the bottom of this file.
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +33,7 @@ function shipped(dir = root, acc = []) {
 }
 
 const files = shipped();
-console.log('\nSelf-contained assets');
+console.log('\nNo external dependency, no runtime connection');
 check('there are files to check', files.length > 0, files.length);
 
 for (const f of files) {
@@ -80,5 +84,19 @@ console.log('\nNo runtime call is wired up');
   check('the narrator is constructed with no budget', /budget:\s*0/.test(main));
 }
 
-console.log('\n' + (failures === 0 ? 'ALL ASSET CHECKS PASS' : failures + ' ASSET CHECKS FAILED'));
+console.log('\nThe documents state the limit of the guarantee');
+{
+  // The promise is only honest while the caveat is present. If somebody deletes
+  // it to make the README read better, this fails.
+  const link = 'docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection';
+  for (const doc of ['README.md', 'docs/design-notes.md']) {
+    const body = readFileSync(join(root, doc), 'utf8');
+    check(doc + ' says the host logs visitor IP addresses', body.includes(link), 'caveat missing');
+  }
+  const readme = readFileSync(join(root, 'README.md'), 'utf8');
+  check('the README no longer claims that no data at all is collected',
+    !/no data collected|nessun dato raccolto/i.test(readme));
+}
+
+console.log('\n' + (failures === 0 ? 'ALL SELF-CONTAINMENT CHECKS PASS' : failures + ' CHECKS FAILED'));
 process.exit(failures === 0 ? 0 : 1);

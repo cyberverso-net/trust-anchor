@@ -43,11 +43,13 @@ Consiglio: sbaglia di proposito almeno una volta, i finali cattivi sono scritti 
 
 Prova `XYZZY`.
 
-## Cosa non fa
+## Cosa non fa, e cosa non può promettere
 
-Nessun account, nessun cookie, nessuna analitica, nessun dato raccolto. Niente viene scaricato da terzi: nessun font remoto, nessuna CDN, nessuna immagine esterna. La pagina dichiara una Content Security Policy che le vieta di aprire qualunque connessione.
+Nessun account, nessun cookie, nessuna analitica, nessuna telemetria. Niente viene scaricato da terzi: nessun font remoto, nessuna CDN, nessuna immagine esterna. La pagina dichiara una Content Security Policy che le vieta di aprire qualunque connessione dopo il caricamento.
 
-Non è una promessa, è una condizione verificata: `test/assets.mjs` fa fallire la build se smette di essere vera. Per un gioco che parla di minimizzazione dei dati sembrava il minimo.
+Non è una promessa, è una condizione verificata: `test/assets.mjs` fa fallire la build se l'applicazione smette di essere autosufficiente.
+
+Quello che il repository può garantire finisce lì. La richiesta iniziale la serve GitHub Pages, che come qualunque server web [registra l'indirizzo IP del visitatore e lo conserva per motivi di sicurezza](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection), che tu sia autenticato o no. Il gioco non può rendere invisibile quella riga di log, e sarebbe sciocco fingere il contrario proprio qui.
 
 ## Struttura
 
@@ -59,7 +61,7 @@ Non è una promessa, è una condizione verificata: `test/assets.mjs` fa fallire 
 | `src/ui.js`, `src/main.js` | solo presentazione |
 | `src/narrator.js` | il gancio per un modello, spento, con fallback obbligatorio |
 | `test/playthrough.mjs` | test di accettazione sui percorsi e sugli invarianti |
-| `test/assets.mjs` | garanzia che il gioco resti autosufficiente |
+| `test/assets.mjs` | nessuna dipendenza esterna, nessuna connessione a runtime |
 | `test/contract.mjs` | schema del file dati e copertura della licenza |
 | `docs/design-notes.md` | le regole che il motore fa rispettare, e perché non c'è un modello |
 | `docs/sources.md` | gli atti dietro ogni affermazione fattuale del gioco |
@@ -131,11 +133,13 @@ Advice: get it deliberately wrong at least once, the bad endings are better writ
 
 Try `XYZZY`.
 
-## What it does not do
+## What it does not do, and what it cannot promise
 
-No account, no cookies, no analytics, no data collected. Nothing is fetched from anybody else either: no web fonts, no CDN, no remote images. The page ships a Content Security Policy that forbids it from opening any connection at all.
+No account, no cookies, no analytics, no telemetry. Nothing is fetched from anybody else either: no web fonts, no CDN, no remote images. The page ships a Content Security Policy that forbids it from opening any connection after it loads.
 
-This is not a promise, it is a checked condition: `test/assets.mjs` fails the build if it ever stops being true. For a game about data minimisation that seemed like the least one could do.
+This is not a promise, it is a checked condition: `test/assets.mjs` fails the build if the application ever stops being self-contained.
+
+What the repository can guarantee stops there. The first request is served by GitHub Pages, which like any web server [logs and stores the visitor's IP address for security purposes](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection), whether you are signed in or not. The game cannot make that log line disappear, and pretending otherwise would be a silly thing to do in this particular repository.
 
 ## Running it and testing it
 
